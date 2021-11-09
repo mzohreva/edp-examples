@@ -1,0 +1,10 @@
+[package]
+name = "runner"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+aesm-client = { version = "0.2", features = ["sgxs"] }
+clap = "2.0"
+enclave-runner = "0.5"
+sgxs-loaders = "0.3.0"
