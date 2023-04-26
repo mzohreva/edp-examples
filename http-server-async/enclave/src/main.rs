@@ -1,25 +1,28 @@
 use anyhow::Result;
-use bytes::Buf;
-use hyper::{rt, server::conn::Http, service::service_fn, Body, StatusCode};
+use hyper::{body::Buf, rt, server::conn::Http, service::service_fn, Body, StatusCode};
 use sha2::{Digest, Sha256};
+use std::io::Read;
 use std::convert::Infallible;
 use std::future::Future;
 use std::result::Result as StdResult;
 use tokio::net::TcpListener;
-use tokio_compat_02::IoCompat;
 
 type Request = hyper::Request<Body>;
 type Response = hyper::Response<Body>;
 
 async fn digest_handler(req: Request) -> Result<Response> {
-    let mut body = hyper::body::aggregate(req.into_body()).await?;
+    let mut body = hyper::body::aggregate(req.into_body()).await?.reader();
     let mut hasher = Sha256::new();
-    while body.has_remaining() {
-        let bytes = body.bytes();
-        hasher.update(bytes);
-        let n = bytes.len();
-        body.advance(n);
+
+    loop {
+        let mut buff = [0u8; 64];
+        match body.read(&mut buff) {
+            Ok(0) => break,
+            Ok(n) => hasher.update(&buff[0..n]),
+            Err(_e) => panic!("Failed to read from buffer"),
+        }
     }
+
     let hash = hex::encode(hasher.finalize());
     Ok(Response::new(Body::from(hash)))
 }
@@ -45,10 +48,9 @@ async fn main() -> Result<()> {
         tokio::spawn(async move {
             let http = Http::new().with_executor(Executor);
             let res = http
-                .serve_connection(IoCompat::new(socket), service_fn(handle_request))
-                .await;
+                .serve_connection(socket, service_fn(handle_request));
 
-            match res {
+            match res.await {
                 Err(e) => println!("Error handling request from client {}: {}", addr, e),
                 Ok(()) => {}
             }

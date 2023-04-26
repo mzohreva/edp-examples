@@ -7,7 +7,7 @@ edition = "2018"
 anyhow = "1.0"
 bytes = "0.5"
 hex = "0.4"
-hyper = { version = "0.13", default-features = false }
+hyper = { version = "0.14", features = ["server", "http1", "http2"], default-features = false }
 sha2 = "0.9"
-tokio = { version = "=0.3.4", features = ["io-util", "io-std", "macros", "net", "rt", "rt-multi-thread", "stream", "sync", "time"] }
+tokio = { version = "1.15.0", features = ["io-util", "io-std", "macros", "net", "rt", "rt-multi-thread", "sync", "time"] }
 tokio-compat-02 = "0.1.2"
