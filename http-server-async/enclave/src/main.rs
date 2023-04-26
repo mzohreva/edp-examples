@@ -24,7 +24,7 @@ async fn digest_handler(req: Request) -> Result<Response> {
     }
 
     let hash = hex::encode(hasher.finalize());
-    Ok(Response::new(Body::from(hash)))
+    Ok(Response::new(Body::from(format!("Hello world! {}", hash))))
 }
 
 async fn handle_request(req: Request) -> StdResult<Response, Infallible> {
