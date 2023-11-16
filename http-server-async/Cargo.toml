@@ -7,7 +7,7 @@ members = [
 # These patches are needed because the async I/O work for SGX is still in progress.
 [patch.crates-io]
 mio = { git = "https://github.com/mzohreva/mio", branch = "mz/sgx-port-0.7.6" }
-tokio = { git = "https://github.com/mzohreva/tokio", branch = "mz/sgx-port-0.3.4" }
+tokio = { git = "https://github.com/fortanix/tokio.git", branch = "raoul/tokio-1.15.0-sgx" }
 
 enclave-runner = { git = "https://github.com/fortanix/rust-sgx", branch = "mz/async-usercalls" }
 sgxs = { git = "https://github.com/fortanix/rust-sgx", branch = "mz/async-usercalls" }
